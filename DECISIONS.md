@@ -35,7 +35,10 @@
 
 ## Deploys
 
-*(se llenan al desplegar)*
+1. **Deploy 1:** repositorio en GitHub (`nicofloresbuilder-code/pipa`), importado a Vercel (equipo dime5, proyecto `pipa`) desde el commit 26f4704. En vivo en https://pipa-dime5.vercel.app. Revisé con el ejemplo simulado: nivel 44 %, aviso de reserva en 2.8 a 3 días.
+2. **Deploy 2:** este commit (documentos finales y registro de deploys). Vercel redespliega solo con cada push a `main`.
+
+Nota: `pipa.vercel.app` ya pertenece a otra cuenta, por eso la dirección es `pipa-dime5.vercel.app`.
 
 ## Lo que no se construyó
 
