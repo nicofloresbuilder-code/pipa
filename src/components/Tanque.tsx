@@ -17,23 +17,23 @@ function Grafica({ e }: { e: Estado }) {
   const res = y((e.reservaPct / 100) * cal.alturaMaxCm);
   return (
     <svg className="grafica" viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Nivel del tanque en el tiempo, con las descargas marcadas">
-      <line x1={pad} x2={W - 10} y1={res} y2={res} stroke="#b8391f" strokeDasharray="5 4" />
-      <text x={pad + 4} y={res - 4} fontSize="11" fill="#b8391f">reserva</text>
+      <line x1={pad} x2={W - 10} y1={res} y2={res} stroke="#e8553a" strokeDasharray="5 4" />
+      <text x={pad + 4} y={res - 4} fontSize="11" fill="#e8553a">reserva</text>
       {[0, 50, 100].map((p) => (
         <g key={p}>
-          <text x={4} y={y((p / 100) * cal.alturaMaxCm) + 4} fontSize="11" fill="#4a5568">{p}%</text>
-          <line x1={pad} x2={W - 10} y1={y((p / 100) * cal.alturaMaxCm)} y2={y((p / 100) * cal.alturaMaxCm)} stroke="#c9c2ad" strokeWidth="0.6" />
+          <text x={4} y={y((p / 100) * cal.alturaMaxCm) + 4} fontSize="11" fill="#52687a">{p}%</text>
+          <line x1={pad} x2={W - 10} y1={y((p / 100) * cal.alturaMaxCm)} y2={y((p / 100) * cal.alturaMaxCm)} stroke="#d3e0e4" strokeWidth="0.6" />
         </g>
       ))}
       {e.entregas.filter((q) => q.tsAntes).map((q) => (
         <g key={q.id}>
-          <line x1={x(q.tsAntes!)} x2={x(q.tsAntes!)} y1={12} y2={H - pad} stroke="#0b6e8a" strokeWidth="2" strokeDasharray="2 3" />
-          <text x={x(q.tsAntes!) + 3} y={22} fontSize="11" fill="#0b6e8a">pipa</text>
+          <line x1={x(q.tsAntes!)} x2={x(q.tsAntes!)} y1={12} y2={H - pad} stroke="#12a4c7" strokeWidth="2" strokeDasharray="2 3" />
+          <text x={x(q.tsAntes!) + 3} y={22} fontSize="11" fill="#12a4c7">pipa</text>
         </g>
       ))}
-      <path d={camino} fill="none" stroke="#12203a" strokeWidth="2" strokeDasharray={e.simulado ? "6 3" : undefined} />
-      <text x={pad} y={H - 8} fontSize="11" fill="#4a5568">{new Date(t0).toLocaleDateString("es-MX", { day: "numeric", month: "short" })}</text>
-      <text x={W - 70} y={H - 8} fontSize="11" fill="#4a5568">{new Date(t1).toLocaleDateString("es-MX", { day: "numeric", month: "short" })}</text>
+      <path d={camino} fill="none" stroke="#0a2a43" strokeWidth="2" strokeDasharray={e.simulado ? "6 3" : undefined} />
+      <text x={pad} y={H - 8} fontSize="11" fill="#52687a">{new Date(t0).toLocaleDateString("es-MX", { day: "numeric", month: "short" })}</text>
+      <text x={W - 70} y={H - 8} fontSize="11" fill="#52687a">{new Date(t1).toLocaleDateString("es-MX", { day: "numeric", month: "short" })}</text>
     </svg>
   );
 }
