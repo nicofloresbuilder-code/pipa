@@ -24,8 +24,8 @@ export default function Compartir({ e, d, ahora }: { e: Estado; d: Derivado; aho
   return (
     <div>
       <div className="tarjeta agua">
-        <h2>Resumen aprobado para el grupo</h2>
-        <p>Las lecturas crudas se quedan en este teléfono. Solo sale lo que tú marques aquí, y sale como texto que tú pegas donde quieras. PIPA no manda nada por su cuenta, y no manda nada a proveedores, caseros ni autoridades.</p>
+        <h2>Mensaje para tus vecinos</h2>
+        <p>Tú decides qué se cuenta. Las lecturas se quedan en este teléfono y solo sale lo que marques aquí, como texto que tú pegas en el grupo. PIPA no manda nada por su cuenta, y no manda nada a proveedores, caseros ni autoridades.</p>
         <fieldset style={{ border: 0, padding: 0, margin: 0 }}>
           <legend className="oculto-lector">Qué incluir</legend>
           {(Object.keys(ETQ) as (keyof OpcionesResumen)[]).map((k) => (

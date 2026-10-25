@@ -11,9 +11,9 @@ const PASOS = [
   { n: 2, t: "Medir el nivel ANTES de la descarga", q: "Testigo (un vecino)" },
   { n: 3, t: "Descarga de la pipa", q: "Chofer · no usa la app y no recibe datos" },
   { n: 4, t: "Medir el nivel DESPUÉS de la descarga", q: "Testigo (un vecino)" },
-  { n: 5, t: "Comparar litros cotizados, observados y estimados", q: "PIPA calcula · el coordinador decide" },
-  { n: 6, t: "Anotar las cuotas (se registra el dinero, no se guarda)", q: "Coordinador" },
-  { n: 7, t: "Si algo no cuadra: excepción con dueño y plazo", q: "Coordinador (nombre propio)" },
+  { n: 5, t: "Comparar lo que te cobraron con lo que midió la regla", q: "PIPA calcula · el coordinador decide" },
+  { n: 6, t: "Anotar quién ya dio su cuota (PIPA solo anota: no cobra ni guarda dinero)", q: "Coordinador" },
+  { n: 7, t: "Si algo no cuadra: una revisión con responsable y plazo", q: "Coordinador (nombre propio)" },
 ];
 
 function pasoActual(x?: Entrega): number {
@@ -47,6 +47,21 @@ function TarjetaEntrega({ x, e, d }: { x: Entrega; e: Estado; d: Derivado }) {
   const [cuando, setCuando] = useState(() => horaLocalTexto(Date.now()));
   const [err, setErr] = useState<string | null>(null);
   const m = x.estado === "cerrada" ? medirEntrega(x, cal, d.base) : null;
+  const [conf, setConf] = useState(false);
+  const cancelar = (label: string) =>
+    !conf ? (
+      <p style={{ marginTop: 18 }}>
+        <button className="btn sec chico" type="button" onClick={() => setConf(true)}>{label}</button>
+      </p>
+    ) : (
+      <Aviso tipo="alerta">
+        ¿Seguro? Se cancela esta entrega y se abre una revisión para atenderlo.
+        <div className="acciones">
+          <button className="btn chico" type="button" onClick={noLlego}>Sí, cancelar</button>
+          <button className="btn sec chico" type="button" onClick={() => setConf(false)}>Volver</button>
+        </div>
+      </Aviso>
+    );
 
   function medirAntes() {
     const v = numero(cmA, 0, cal.alturaMaxCm * 1.05);
@@ -93,7 +108,7 @@ function TarjetaEntrega({ x, e, d }: { x: Entrega; e: Estado; d: Derivado }) {
             ts,
             responsable: s.coordinador,
             estado: "abierta",
-            resumen: `Cotizados ${fmtNum(x.litrosCotizados)} L; observados ${fmtNum(med.observados)} L (diferencia por revisar de ${fmtNum(med.diferencia)} L, margen ±${fmtNum(med.margen)} L).`,
+            resumen: `Te cobraron ${fmtNum(x.litrosCotizados)} L y la regla marca cerca de ${fmtNum(med.entregadosEst)} L. Faltan cerca de ${fmtNum(Math.abs(med.diferencia))} L, más que el error de medida (±${fmtNum(med.margen)} L).`,
             notas: [],
           }]
         : [];
@@ -119,8 +134,8 @@ function TarjetaEntrega({ x, e, d }: { x: Entrega; e: Estado; d: Derivado }) {
     <div className="tarjeta">
       <h3>
         {x.proveedor} {x.simulada && <Simulado />}{" "}
-        <span className={`insignia ${x.estado === "cerrada" ? "ok" : x.estado === "cancelada" ? "alerta" : "agua"}`}>
-          {x.estado === "pedida" ? "Pedida" : x.estado === "midio_antes" ? "Descargando" : x.estado === "cerrada" ? "Cerrada" : "Cancelada"}
+        <span className={`insignia ${x.estado === "cerrada" ? (m?.fuera ? "alerta" : "ok") : x.estado === "cancelada" ? "alerta" : "agua"}`}>
+          {x.estado === "pedida" ? "Pedida" : x.estado === "midio_antes" ? "Descargando" : x.estado === "cerrada" ? (m?.fuera ? "Medida · por revisar" : "Medida · en orden") : "Cancelada"}
         </span>
       </h3>
       <p className="chico">Pedida {fmtFechaHora(x.ts)} · cotizada en {fmtL(x.litrosCotizados)} · {fmtMXN(x.precioTotal)}</p>
@@ -135,8 +150,8 @@ function TarjetaEntrega({ x, e, d }: { x: Entrega; e: Estado; d: Derivado }) {
           <Fallo texto={err} />
           <div className="acciones">
             <button className="btn" type="button" onClick={medirAntes}>Registrar nivel ANTES</button>
-            <button className="btn sec" type="button" onClick={noLlego}>La pipa no llegó</button>
           </div>
+          {cancelar("La pipa no llegó")}
         </>
       )}
 
@@ -150,25 +165,28 @@ function TarjetaEntrega({ x, e, d }: { x: Entrega; e: Estado; d: Derivado }) {
           <Fallo texto={err} />
           <div className="acciones">
             <button className="btn" type="button" onClick={medirDespues}>Registrar nivel DESPUÉS y comparar</button>
-            <button className="btn sec" type="button" onClick={noLlego}>No descargó</button>
           </div>
+          {cancelar("La pipa no descargó")}
         </>
       )}
 
       {m && (
         <>
           <div className="rejilla">
-            <div className="dato"><div className="v">{fmtL(x.litrosCotizados)}</div><div className="e">COTIZADOS (lo que dijo el proveedor)</div></div>
-            <div className="dato"><div className="v">{fmtL(m.observados)}</div><div className="e">OBSERVADOS (después − antes, con la calibración)</div></div>
-            <div className="dato"><div className="v">{m.consumoEst == null ? "—" : `+${fmtL(m.consumoEst)}`}</div><div className="e">{m.consumoEst == null ? "ESTIMADOS: sin historial para estimar el consumo" : `ESTIMADOS: consumo durante ${m.minutos} min`}</div></div>
-            <div className={`dato ${m.fuera ? "fuera" : "bien"}`}><div className="v">{fmtL(m.diferencia)}</div><div className="e">diferencia (margen ±{Math.round(m.margen)} L)</div></div>
+            <div className="dato"><div className="v">{fmtL(x.litrosCotizados)}</div><div className="e">Lo que te cobraron (cotizados)</div></div>
+            <div className="dato"><div className="v">{fmtL(m.observados)}</div><div className="e">Lo que midió la regla (observados: después menos antes)</div></div>
+            <div className="dato"><div className="v">{m.consumoEst == null ? "—" : `+${fmtL(m.consumoEst)}`}</div><div className="e">{m.consumoEst == null ? "Agua gastada durante la descarga (estimados): aún no se puede calcular" : `Agua gastada durante la descarga (estimados): ${m.minutos} min`}</div></div>
+            <div className={`dato ${m.fuera ? "fuera" : "bien"}`}><div className="v">{fmtL(m.diferencia)}</div><div className="e">Falta o sobra (error de medida que se acepta: ±{Math.round(m.margen).toLocaleString("es-MX")} L)</div></div>
           </div>
           {m.fuera ? (
-            <Aviso tipo="alerta"><strong>Diferencia por revisar.</strong> Esto no dice quién tiene la razón: puede ser la calibración, la medición o la entrega. Se abrió una excepción a nombre de {e.coordinador}. Antes de hablar con el proveedor, revisa las mediciones en privado.</Aviso>
+            <Aviso tipo="alerta">
+              <strong>Te cobraron {fmtL(x.litrosCotizados)} y la regla marca cerca de {fmtL(m.entregadosEst)}.</strong> Faltan cerca de {fmtL(Math.abs(m.diferencia))}, más de lo que explica el error de medida (±{Math.round(m.margen).toLocaleString("es-MX")} L). Todavía no sabemos por qué: puede ser la medida de la cisterna, la regla o la entrega.
+              <br />Se abrió una <strong>revisión</strong> a cargo de {e.coordinador}: es una tarea para revisar con calma, no una acusación. Primero revisa las medidas en privado y luego, si sigue sin cuadrar, habla con el proveedor.
+            </Aviso>
           ) : (
-            <Aviso tipo="agua">Dentro del margen: la diferencia es menor que lo que puede explicar el error de calibración y de lectura.</Aviso>
+            <Aviso tipo="agua">Todo en orden: la diferencia es menor que el error normal al medir con regla, así que no hay nada que revisar.</Aviso>
           )}
-          {m.consumoEst == null && <Aviso>Aún no hay historial de consumo; se amplió el margen y no se estimó el consumo durante la descarga.</Aviso>}
+          {m.consumoEst == null && <Aviso>Todavía no se puede calcular cuánta agua se gastó mientras descargaba (faltan días de lecturas). Por eso el margen de error es más grande.</Aviso>}
         </>
       )}
     </div>
@@ -205,7 +223,7 @@ export default function Entregas({ e, d }: { e: Estado; d: Derivado }) {
 
       <div className="tarjeta">
         <h2>Registrar una pipa pedida</h2>
-        {enCurso ? <Aviso>Ya hay una entrega en curso. Termínala antes de registrar otra.</Aviso> : (
+        {enCurso ? <Aviso>Ya hay una entrega en curso. Termina esa antes de registrar otra.</Aviso> : (
           <>
             <Campo id="prov" etiqueta="Etiqueta de la pipa"><input id="prov" value={prov} maxLength={30} onChange={(v) => setProv(v.target.value)} placeholder="Pipa A" /></Campo>
             <div className="fila">

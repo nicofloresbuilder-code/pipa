@@ -82,7 +82,7 @@ export default function Tanque({ e, cambiarCal }: { e: Estado; cambiarCal: () =>
     <div>
       <div className="tarjeta">
         <h2>Anotar el nivel {e.simulado && <Simulado />}</h2>
-        <p className="chico">El celular es el sensor: tú lees la regla o el flotador y lo anotas. Cada lectura se queda en este teléfono.</p>
+        <p className="chico">Tú mides con la regla o el flotador y aquí apuntas el número. Cada lectura se queda guardada en este teléfono.</p>
         <div className="fila">
           <Campo id="cm" etiqueta="Nivel del agua (cm)"><input id="cm" inputMode="decimal" value={cm} onChange={(x) => setCm(x.target.value)} placeholder={`0 a ${cal.alturaMaxCm}`} /></Campo>
           <Campo id="cuando" etiqueta="¿Cuándo?"><input id="cuando" type="datetime-local" value={cuando} onChange={(x) => setCuando(x.target.value)} /></Campo>
@@ -98,12 +98,12 @@ export default function Tanque({ e, cambiarCal }: { e: Estado; cambiarCal: () =>
       </div>
 
       <div className="tarjeta">
-        <h2>Calibración</h2>
+        <h2>Medidas de tu cisterna</h2>
         <p>
-          <span className="num">{cal.litrosPorCm}</span> L por cm · altura máxima <span className="num">{cal.alturaMaxCm}</span> cm · error aceptado ±{cal.incertidumbrePct}% · calibrada el {cal.fecha}
-          {cal.nota ? ` · ${cal.nota}` : ""}
+          Tu cisterna guarda <span className="num">{cal.litrosPorCm}</span> litros por cada centímetro de agua, hasta <span className="num">{cal.alturaMaxCm}</span> cm de altura. Margen de error que aceptas: ±{cal.incertidumbrePct}%. Medida el {new Date(cal.fecha + "T12:00:00").toLocaleDateString("es-MX", { day: "numeric", month: "long", year: "numeric" })}.
+          {cal.nota ? ` ${cal.nota}` : ""}
         </p>
-        <Aviso tipo="agua">Los litros son <strong>estimados</strong> a partir de los centímetros. Una calibración mala se nota en todo lo demás: si puedes, mide una vez cuánta agua entra con una cubeta o un medidor.</Aviso>
+        <Aviso tipo="agua">Los litros se calculan con las medidas de tu cisterna, por eso son aproximados. Si puedes, comprueba una vez cuánta agua entra con una cubeta o un medidor.</Aviso>
         <div className="acciones"><button className="btn sec" type="button" onClick={cambiarCal}>Cambiar calibración u hogares</button></div>
       </div>
 

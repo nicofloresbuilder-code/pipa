@@ -47,8 +47,8 @@ p { margin: 0 0 .7em; }
 .marca span { color: var(--agua); }
 .lema { color: var(--tinta-2); font-size: .9rem; }
 
-.nav { display: flex; gap: 4px; overflow-x: auto; padding: 6px 0 0; border-bottom: 2px solid var(--tinta); position: sticky; top: 0; background: var(--papel); z-index: 5; }
-.nav button { appearance: none; border: 2px solid transparent; border-bottom: none; background: transparent; color: var(--tinta); font: inherit; font-size: .92rem; padding: 9px 12px 8px; cursor: pointer; border-radius: 6px 6px 0 0; white-space: nowrap; min-height: 44px; position: relative; }
+.nav { display: flex; gap: 2px; overflow-x: auto; padding: 6px 0 0; border-bottom: 2px solid var(--tinta); position: sticky; top: 0; background: var(--papel); z-index: 5; }
+.nav button { appearance: none; border: 2px solid transparent; border-bottom: none; background: transparent; color: var(--tinta); font: inherit; font-size: .9rem; padding: 9px 9px 8px; cursor: pointer; border-radius: 6px 6px 0 0; white-space: nowrap; min-height: 44px; position: relative; }
 .nav button[aria-current="page"] { background: var(--papel-2); border-color: var(--tinta); font-weight: 700; margin-bottom: -2px; padding-bottom: 10px; }
 .nav .punto { display: inline-block; min-width: 18px; padding: 0 5px; margin-left: 5px; border-radius: 9px; background: var(--alerta); color: #fff; font-size: .72rem; font-weight: 700; text-align: center; }
 

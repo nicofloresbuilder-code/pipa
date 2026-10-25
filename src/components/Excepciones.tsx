@@ -91,17 +91,22 @@ function Tarjeta({ x, e, d, ahora }: { x: Excepcion; e: Estado; d: Derivado; aho
       )}
       {!cerrada && (
         <>
-          <Campo id={`n-${x.id}`} etiqueta="Nota privada">
-            <input id={`n-${x.id}`} value={nota} maxLength={300} onChange={(v) => setNota(v.target.value)} placeholder="Qué se revisó, con quién se habló" />
+          <Campo id={`n-${x.id}`} etiqueta="¿Qué viste o con quién hablaste?">
+            <input id={`n-${x.id}`} value={nota} maxLength={300} onChange={(v) => setNota(v.target.value)} placeholder="Ej: volví a medir con la regla y sí cuadra" />
           </Campo>
           <Fallo texto={err} />
           <div className="acciones">
-            {x.estado === "abierta" && <button className="btn chico" type="button" onClick={() => poner("en_revision", "Puesta en revisión.")}>Poner en revisión</button>}
-            <button className="btn sec chico" type="button" onClick={agregarNota}>Agregar nota</button>
-            {x.tipo === "litros" && entrega && <button className="btn sec chico" type="button" onClick={() => { setCorrigiendo(true); setCmA(String(entrega.cmAntes ?? "")); setCmD(String(entrega.cmDespues ?? "")); }}>Corregir medición</button>}
-            <button className="btn sec chico" type="button" onClick={() => cerrar("resuelta")}>Marcar resuelta</button>
-            <button className="btn sec chico" type="button" onClick={() => cerrar("sin_causa")}>Cerrar sin causa</button>
+            <button className="btn" type="button" onClick={() => cerrar("resuelta")}>Ya lo revisé: resuelta</button>
           </div>
+          <details>
+            <summary>Más opciones</summary>
+            <div className="acciones">
+              {x.estado === "abierta" && <button className="btn sec chico" type="button" onClick={() => poner("en_revision", "Puesta en revisión.")}>Estoy revisándola</button>}
+              <button className="btn sec chico" type="button" onClick={agregarNota}>Solo guardar la nota</button>
+              {x.tipo === "litros" && entrega && <button className="btn sec chico" type="button" onClick={() => { setCorrigiendo(true); setCmA(String(entrega.cmAntes ?? "")); setCmD(String(entrega.cmDespues ?? "")); }}>Corregir las medidas</button>}
+              <button className="btn sec chico" type="button" onClick={() => cerrar("sin_causa")}>Cerrar: no encontré la causa</button>
+            </div>
+          </details>
         </>
       )}
       {cerrada && <div className="acciones"><button className="btn sec chico" type="button" onClick={() => poner("en_revision", "Reabierta.")}>Reabrir</button></div>}
@@ -131,7 +136,7 @@ export default function Excepciones({ e, d, ahora }: { e: Estado; d: Derivado; a
 
   function abrir() {
     const t = limpiar(texto, 200);
-    if (!e.coordinador) return setErr("Sin coordinador con nombre no se abren excepciones.");
+    if (!e.coordinador) return setErr("Sin coordinador con nombre no se abren revisiones.");
     if (t.length < 3) return setErr("Cuenta en una frase qué pasó.");
     setErr(null);
     cambiar((s) => ({ ...s, excepciones: [...s.excepciones, { id: nuevoId(), tipo, ts: Date.now(), responsable: s.coordinador, estado: "abierta", resumen: t, notas: [] }] }));
@@ -141,28 +146,30 @@ export default function Excepciones({ e, d, ahora }: { e: Estado; d: Derivado; a
   return (
     <div>
       <div className="tarjeta ambar">
-        <h2>Cómo se manejan las excepciones</h2>
-        <p>Cada excepción tiene <strong>una persona con nombre</strong> ({e.coordinador || "el coordinador"}), un primer paso y un plazo. Se atienden en privado primero. PIPA nunca acusa a nadie: dice &quot;diferencia por revisar&quot;.</p>
+        <h2>Revisiones: cuando algo no cuadra</h2>
+        <p>Cada revisión (en el sistema, una &quot;excepción&quot;) tiene <strong>una persona con nombre</strong> ({e.coordinador || "el coordinador"}), un primer paso y un plazo. Se atienden en privado primero. PIPA nunca acusa a nadie.</p>
+        <details><summary>Ver tipos, primer paso y plazos</summary>
         <div className="tabla-scroll">
           <table>
             <thead><tr><th>Tipo</th><th>Primer paso</th><th>Plazo</th></tr></thead>
             <tbody>{Object.entries(TIPOS).map(([k, v]) => <tr key={k}><td>{v.t}</td><td>{v.primer}</td><td>{v.plazo}</td></tr>)}</tbody>
           </table>
         </div>
+        </details>
       </div>
 
-      {lista.length === 0 ? <p>No hay excepciones. Cuando una entrega salga fuera del margen, aparece aquí.</p> : lista.map((x) => <Tarjeta key={x.id} x={x} e={e} d={d} ahora={ahora} />)}
+      {lista.length === 0 ? <p>No hay revisiones pendientes. Si una entrega no cuadra, aparece aquí.</p> : lista.map((x) => <Tarjeta key={x.id} x={x} e={e} d={d} ahora={ahora} />)}
 
       <div className="tarjeta">
-        <h2>Abrir una excepción a mano</h2>
+        <h2>Abrir una revisión a mano</h2>
         <label htmlFor="tipo-exc">Tipo</label>
         <select id="tipo-exc" value={tipo} onChange={(v) => setTipo(v.target.value as TipoExcepcion)}>
           {Object.entries(TIPOS).filter(([k]) => k !== "litros").map(([k, v]) => <option key={k} value={k}>{v.t}</option>)}
         </select>
         <Campo id="txt-exc" etiqueta="¿Qué pasó?"><input id="txt-exc" value={texto} maxLength={200} onChange={(v) => setTexto(v.target.value)} /></Campo>
         <Fallo texto={err} />
-        <Aviso>Las excepciones de litros se abren solas al comparar una entrega.</Aviso>
-        <div className="acciones"><button className="btn" type="button" onClick={abrir}>Abrir excepción</button></div>
+        <Aviso>Las revisiones por litros se abren solas al comparar una entrega.</Aviso>
+        <div className="acciones"><button className="btn" type="button" onClick={abrir}>Abrir revisión</button></div>
       </div>
     </div>
   );

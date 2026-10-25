@@ -16,7 +16,7 @@ const TABS = [
   ["hoy", "Hoy"],
   ["tanque", "Tanque"],
   ["entregas", "Entregas"],
-  ["excepciones", "Excepciones"],
+  ["excepciones", "Revisiones"],
   ["dinero", "Dinero"],
   ["compartir", "Compartir"],
 ] as const;

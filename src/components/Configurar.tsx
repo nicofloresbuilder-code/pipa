@@ -61,13 +61,12 @@ export default function Configurar({ alTerminar }: { alTerminar?: () => void }) 
   return (
     <div>
       <div className="tarjeta agua">
-        <h2>Día 1: ¿quién es el usuario 1?</h2>
+        <h2>Primero: ¿quién lleva las cuentas de la cisterna?</h2>
         <p>
-          El usuario 1 es <strong>una persona con nombre</strong> que ya hace este trabajo a mano: el coordinador de la cisterna. Ella o él mide (o designa a un testigo), anota las cuotas y recibe las
-          excepciones. Sin ese nombre, PIPA no abre ninguna excepción.
+          Una <strong>persona con nombre</strong>, la que ya lleva las cuentas y avisa en el grupo (le decimos coordinador). Esa persona anota los niveles y las cuotas, y es quien revisa cuando algo no cuadra. Sin ese nombre, PIPA no abre ninguna revisión.
         </p>
         <details>
-          <summary>Frase para pedirle a un vecino que sea el coordinador</summary>
+          <summary>¿Todavía no tienes coordinador? Toca aquí: te damos una frase para pedírselo a un vecino</summary>
           <p className="mono chico" style={{ whiteSpace: "pre-wrap" }}>{FRASE}</p>
           <button className="btn sec chico" type="button" onClick={async () => { setCopiado(await copiar(FRASE)); }}>
             {copiado ? "Copiada" : "Copiar frase"}
@@ -76,38 +75,38 @@ export default function Configurar({ alTerminar }: { alTerminar?: () => void }) 
       </div>
 
       <div className="tarjeta">
-        <h2>{e.cal ? "Calibración y hogares" : "Armar la cisterna"}</h2>
+        <h2>{e.cal ? "Medidas de la cisterna y hogares" : "Armar la cisterna"}</h2>
         <Aviso>Esta app guarda todo en tu teléfono. No pidas ni escribas datos reales de personas: usa apodos.</Aviso>
-        <Campo id="coord" etiqueta="Coordinador (nombre o apodo)">
+        <Campo id="coord" etiqueta="Tu nombre (o apodo)" ayuda="Es el nombre que aparecerá como responsable de las revisiones.">
           <input id="coord" value={coord} maxLength={40} onChange={(x) => setCoord(x.target.value)} autoComplete="off" />
         </Campo>
 
-        <label htmlFor="modo">¿Cómo calibramos la cisterna?</label>
+        <label htmlFor="modo">¿Cómo sabemos cuánta agua cabe?</label>
         <select id="modo" value={modo} onChange={(x) => setModo(x.target.value as "medidas" | "directo")}>
-          <option value="medidas">Tengo el largo y el ancho (cisterna rectangular)</option>
-          <option value="directo">Ya sé cuántos litros entran por cada centímetro</option>
+          <option value="medidas">Tengo largo y ancho</option>
+          <option value="directo">Ya sé los litros por cm</option>
         </select>
         {modo === "medidas" ? (
           <div className="fila">
-            <Campo id="largo" etiqueta="Largo (m)"><input id="largo" inputMode="decimal" value={largo} onChange={(x) => setLargo(x.target.value)} placeholder="4" /></Campo>
-            <Campo id="ancho" etiqueta="Ancho (m)"><input id="ancho" inputMode="decimal" value={ancho} onChange={(x) => setAncho(x.target.value)} placeholder="2.5" /></Campo>
+            <Campo id="largo" etiqueta="Largo (m)"><input id="largo" inputMode="decimal" value={largo} onChange={(x) => setLargo(x.target.value)} placeholder="Ej: 4" /></Campo>
+            <Campo id="ancho" etiqueta="Ancho (m)"><input id="ancho" inputMode="decimal" value={ancho} onChange={(x) => setAncho(x.target.value)} placeholder="Ej: 2.5" /></Campo>
           </div>
         ) : (
-          <Campo id="lpc" etiqueta="Litros por cada cm de altura"><input id="lpc" inputMode="decimal" value={lpc} onChange={(x) => setLpc(x.target.value)} placeholder="100" /></Campo>
+          <Campo id="lpc" etiqueta="Litros por cada cm de altura"><input id="lpc" inputMode="decimal" value={lpc} onChange={(x) => setLpc(x.target.value)} placeholder="Ej: 100" /></Campo>
         )}
         <div className="fila">
-          <Campo id="alto" etiqueta="Altura máxima del agua (cm)"><input id="alto" inputMode="decimal" value={alto} onChange={(x) => setAlto(x.target.value)} placeholder="130" /></Campo>
-          <Campo id="inc" etiqueta="Error aceptado (%)" ayuda="Qué tanto te fías de la calibración."><input id="inc" inputMode="decimal" value={inc} onChange={(x) => setInc(x.target.value)} /></Campo>
-          <Campo id="res" etiqueta="Reserva mínima (%)" ayuda="Aviso cuando el nivel se acerque."><input id="res" inputMode="decimal" value={reserva} onChange={(x) => setReserva(x.target.value)} /></Campo>
+          <Campo id="alto" etiqueta="Altura máxima del agua (cm)"><input id="alto" inputMode="decimal" value={alto} onChange={(x) => setAlto(x.target.value)} placeholder="Ej: 130" /></Campo>
+          <Campo id="inc" etiqueta="Margen de error (%)" ayuda="Si no sabes, déjalo en 5."><input id="inc" inputMode="decimal" value={inc} onChange={(x) => setInc(x.target.value)} /></Campo>
+          <Campo id="res" etiqueta="Avisar cuando quede (%)" ayuda="Si no sabes, déjalo en 15."><input id="res" inputMode="decimal" value={reserva} onChange={(x) => setReserva(x.target.value)} /></Campo>
         </div>
-        <Campo id="nota" etiqueta="Nota de calibración (opcional)"><input id="nota" value={nota} maxLength={120} onChange={(x) => setNota(x.target.value)} placeholder="Medí con cinta el 20 de octubre" /></Campo>
+        <Campo id="nota" etiqueta="Nota de calibración (opcional)"><input id="nota" value={nota} maxLength={120} onChange={(x) => setNota(x.target.value)} placeholder="Ej: medí con cinta el 20 de octubre" /></Campo>
 
         <Campo id="hog" etiqueta="Hogares (uno por línea)">
           <textarea id="hog" value={hogares} onChange={(x) => setHogares(x.target.value)} placeholder={"Casa 1\nCasa 2\nCasa 3"} />
         </Campo>
         <Fallo texto={err} />
         <div className="acciones">
-          <button className="btn" type="button" onClick={guardar}>Guardar</button>
+          <button className="btn" type="button" onClick={guardar}>{e.cal ? "Guardar cambios" : "Guardar y empezar"}</button>
           {!e.cal && (
             <button
               className="btn sec"

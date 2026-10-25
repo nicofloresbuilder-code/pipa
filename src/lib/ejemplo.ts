@@ -111,7 +111,7 @@ export function ejemploSimulado(ahora: number, coordinadorActual: string): Estad
         ts: e.tsDespues ?? ahora,
         responsable: coord,
         estado: "abierta",
-        resumen: `Cotizados ${fmtNum(e.litrosCotizados)} L; observados ${fmtNum(m.observados)} L (diferencia por revisar de ${fmtNum(m.diferencia)} L, margen ±${fmtNum(m.margen)} L).`,
+        resumen: `Te cobraron ${fmtNum(e.litrosCotizados)} L y la regla marca cerca de ${fmtNum(m.entregadosEst)} L. Faltan cerca de ${fmtNum(Math.abs(m.diferencia))} L, más que el error de medida (±${fmtNum(m.margen)} L).`,
         notas: [],
         simulada: true,
       });

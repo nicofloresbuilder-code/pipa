@@ -1,5 +1,5 @@
 "use client";
-import { litrosDe, medirEntrega } from "@/lib/motor";
+import { medirEntrega } from "@/lib/motor";
 import type { Derivado } from "@/lib/derivar";
 import type { Estado } from "@/lib/tipos";
 import { Aviso, Simulado, fmtL, fmtMXN, hace } from "./ui";
@@ -42,7 +42,7 @@ export default function Hoy({ e, d, ahora, ir }: { e: Estado; d: Derivado; ahora
       </div>
 
       <div className="tarjeta">
-        <h2>¿Cuándo pedir pipa? <span className="insignia agua">Asesor</span></h2>
+        <h2>¿Cuándo pedir pipa? <span className="insignia agua">Aviso</span></h2>
         {pron?.tipo === "ok" ? (
           <>
             <p>
@@ -74,10 +74,10 @@ export default function Hoy({ e, d, ahora, ir }: { e: Estado; d: Derivado; ahora
 
       {abierta ? (
         <div className="tarjeta alerta">
-          <h2>Excepción pendiente</h2>
+          <h2>Revisión pendiente</h2>
           <p>{abierta.resumen}</p>
           <p className="chico">A cargo de {abierta.responsable} · {hace(abierta.ts, ahora)}</p>
-          <div className="acciones"><button className="btn" type="button" onClick={() => ir("excepciones")}>Ver excepciones</button></div>
+          <div className="acciones"><button className="btn" type="button" onClick={() => ir("excepciones")}>Ver revisiones</button></div>
         </div>
       ) : null}
 
@@ -90,14 +90,13 @@ export default function Hoy({ e, d, ahora, ir }: { e: Estado; d: Derivado; ahora
         ) : ultima && mUltima ? (
           <p>
             Última entrega: cotizados <strong className="num">{fmtL(ultima.litrosCotizados)}</strong>, observados <strong className="num">{fmtL(mUltima.observados)}</strong>.{" "}
-            {mUltima.fuera ? <span className="insignia alerta">Diferencia por revisar</span> : <span className="insignia ok">Dentro del margen</span>} Costo: {fmtMXN(ultima.precioTotal)}.
+            {mUltima.fuera ? <span className="insignia alerta">Por revisar</span> : <span className="insignia ok">Dentro del margen</span>} Costo: {fmtMXN(ultima.precioTotal)}.
           </p>
         ) : (
           <p>No hay entregas registradas.</p>
         )}
         <div className="acciones"><button className="btn sec" type="button" onClick={() => ir("entregas")}>Ir a entregas</button></div>
       </div>
-      <p className="chico">Litros de ejemplo: {n ? fmtL(litrosDe(1, e.cal)) : fmtL(e.cal.litrosPorCm)} por cada centímetro de agua.</p>
     </div>
   );
 }

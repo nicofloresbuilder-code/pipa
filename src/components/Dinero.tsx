@@ -64,7 +64,7 @@ export default function Dinero({ e }: { e: Estado }) {
                           <td>{nombreHogar(e, c.hogarId)}</td>
                           <td className="num">{fmtMXN(c.monto)}</td>
                           <td>
-                            <select aria-label={`Método de ${nombreHogar(e, c.hogarId)}`} value={c.metodo} onChange={(v) => metodo(c, v.target.value as Cuota["metodo"])} style={{ minHeight: 36, padding: "4px 6px" }}>
+                            <select aria-label={`Método de ${nombreHogar(e, c.hogarId)}`} value={c.metodo} onChange={(v) => metodo(c, v.target.value as Cuota["metodo"])} style={{ minHeight: 36, padding: "4px 6px", minWidth: 130 }}>
                               <option value="efectivo">Efectivo</option>
                               <option value="transferencia">Transferencia</option>
                               <option value="otro">Otro</option>
@@ -85,10 +85,10 @@ export default function Dinero({ e }: { e: Estado }) {
 
       <div className="tarjeta">
         <h2>Hogares</h2>
-        <p className="chico">La parte cambia cómo se reparte la cuota de las <em>próximas</em> entregas. Marca &quot;efectivo&quot; para quien participa sin celular o sin transferencia.</p>
+        <p className="chico">&quot;Cuánto paga&quot;: 1 es una parte normal, 2 es el doble. Solo cambia las <em>próximas</em> entregas. Marca &quot;solo efectivo&quot; para quien no usa celular ni transferencia.</p>
         <div className="tabla-scroll">
           <table>
-            <thead><tr><th>Hogar</th><th>Parte</th><th>Efectivo</th></tr></thead>
+            <thead><tr><th>Hogar</th><th>Cuánto paga</th><th>Solo efectivo</th></tr></thead>
             <tbody>
               {e.hogares.map((h) => (
                 <tr key={h.id}>
@@ -104,7 +104,7 @@ export default function Dinero({ e }: { e: Estado }) {
 
       <div className="tarjeta">
         <h2>Comparar cotizaciones</h2>
-        <Aviso tipo="agua">PIPA no tiene directorio de proveedores ni los recomienda. Compara <strong>lo que tú capturas</strong> que te dijeron. El precio de lista y el que pagas al final pueden diferir.</Aviso>
+        <Aviso tipo="agua">PIPA no tiene directorio de proveedores ni los recomienda. Compara <strong>lo que tú anotas</strong> que te dijeron (precio por cada 1,000 litros). El precio de lista y el que pagas al final pueden diferir.</Aviso>
         <div className="fila">
           <Campo id="ce" etiqueta="Etiqueta"><input id="ce" value={etq} maxLength={30} onChange={(v) => setEtq(v.target.value)} placeholder="Pipa C" /></Campo>
           <Campo id="cl" etiqueta="Litros"><input id="cl" inputMode="numeric" value={lit} onChange={(v) => setLit(v.target.value)} placeholder="10000" /></Campo>
@@ -115,11 +115,11 @@ export default function Dinero({ e }: { e: Estado }) {
         {cot.length > 0 && (
           <div className="tabla-scroll" style={{ marginTop: 12 }}>
             <table>
-              <thead><tr><th>Etiqueta</th><th className="num">Litros</th><th className="num">Precio</th><th className="num">$ por m³</th><th></th></tr></thead>
+              <thead><tr><th>Etiqueta</th><th className="num">Litros</th><th className="num">Precio</th><th className="num">$ por 1,000 L</th><th></th></tr></thead>
               <tbody>
                 {cot.map((c, i) => (
                   <tr key={c.id}>
-                    <td>{c.etiqueta} {i === 0 && cot.length > 1 && <span className="insignia ok">Menor $ por m³</span>}</td>
+                    <td>{c.etiqueta} {i === 0 && cot.length > 1 && <span className="insignia ok">Menor $ por 1,000 L</span>}</td>
                     <td className="num">{fmtL(c.litros)}</td>
                     <td className="num">{fmtMXN(c.precio)}</td>
                     <td className="num">{fmtMXN(c.porM3)}</td>
@@ -130,7 +130,7 @@ export default function Dinero({ e }: { e: Estado }) {
             </table>
           </div>
         )}
-        {hist != null && <p className="chico">Referencia: en tus entregas cerradas pagaron en promedio {fmtMXN(hist)} por m³ (según lo cotizado, no lo observado).</p>}
+        {hist != null && <p className="chico">Referencia: en tus entregas cerradas pagaron en promedio {fmtMXN(hist)} por cada 1,000 litros (según lo cotizado, no lo observado).</p>}
       </div>
     </div>
   );
