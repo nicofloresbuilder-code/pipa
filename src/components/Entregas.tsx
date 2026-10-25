@@ -7,13 +7,13 @@ import type { Cuota, Entrega, Estado, Excepcion, Lectura } from "@/lib/tipos";
 import { Aviso, Campo, Fallo, Simulado, fmtFechaHora, fmtL, fmtMXN } from "./ui";
 
 const PASOS = [
-  { n: 1, t: "Pedir la pipa y anotar lo cotizado", q: "Coordinador" },
-  { n: 2, t: "Medir el nivel ANTES de la descarga", q: "Testigo (un vecino)" },
-  { n: 3, t: "Descarga de la pipa", q: "Chofer · no usa la app y no recibe datos" },
-  { n: 4, t: "Medir el nivel DESPUÉS de la descarga", q: "Testigo (un vecino)" },
-  { n: 5, t: "Comparar lo que te cobraron con lo que midió la regla", q: "PIPA calcula · el coordinador decide" },
-  { n: 6, t: "Anotar quién ya dio su cuota (PIPA solo anota: no cobra ni guarda dinero)", q: "Coordinador" },
-  { n: 7, t: "Si algo no cuadra: una revisión con responsable y plazo", q: "Coordinador (nombre propio)" },
+  { n: 1, t: "Pides la pipa y anotas lo que te cobran", q: "Coordinador" },
+  { n: 2, t: "Mides el nivel ANTES de que descargue", q: "Testigo (un vecino)" },
+  { n: 3, t: "La pipa descarga", q: "Chofer (no usa la app)" },
+  { n: 4, t: "Mides el nivel DESPUÉS", q: "Testigo (un vecino)" },
+  { n: 5, t: "PIPA compara lo que te cobraron con lo que midió la regla", q: "PIPA calcula; tú decides" },
+  { n: 6, t: "Anotas quién ya dio su cuota (PIPA solo anota; no cobra ni guarda dinero)", q: "Coordinador" },
+  { n: 7, t: "Si algo no cuadra, alguien con nombre lo revisa", q: "Coordinador" },
 ];
 
 function pasoActual(x?: Entrega): number {
@@ -122,6 +122,29 @@ function TarjetaEntrega({ x, e, d }: { x: Entrega; e: Estado; d: Derivado }) {
     });
   }
 
+  const [cmSolo, setCmSolo] = useState("");
+  function sinAntes() {
+    const v = numero(cmSolo, 0, cal.alturaMaxCm * 1.05);
+    const t = limpiar(testigo, 30) || "sin testigo";
+    if (v == null) return setErr("Anota el nivel de ahora en cm, dentro de la altura de la cisterna.");
+    setErr(null);
+    const ts = Date.now();
+    cambiar((s) => ({
+      ...s,
+      lecturas: [...s.lecturas, { id: nuevoId(), ts, cm: v, fuente: "manual" as const, nota: "nivel después de una pipa sin medida de antes" }],
+      entregas: s.entregas.map((q) => (q.id === x.id ? { ...q, estado: "cerrada" as const, testigo: t, tsDespues: ts, cmDespues: v } : q)),
+      cuotas: [
+        ...s.cuotas,
+        ...(x.precioTotal > 0
+          ? repartir(x.precioTotal, s.hogares).map((r) => ({
+              id: nuevoId(), entregaId: x.id, hogarId: r.hogarId, monto: r.monto,
+              metodo: (s.hogares.find((h) => h.id === r.hogarId)?.efectivo ? "efectivo" : "transferencia") as Cuota["metodo"], confirmada: false,
+            }))
+          : []),
+      ],
+    }));
+  }
+
   function noLlego() {
     cambiar((s) => ({
       ...s,
@@ -135,22 +158,28 @@ function TarjetaEntrega({ x, e, d }: { x: Entrega; e: Estado; d: Derivado }) {
       <h3>
         {x.proveedor} {x.simulada && <Simulado />}{" "}
         <span className={`insignia ${x.estado === "cerrada" ? (m?.fuera ? "alerta" : "ok") : x.estado === "cancelada" ? "alerta" : "agua"}`}>
-          {x.estado === "pedida" ? "Pedida" : x.estado === "midio_antes" ? "Descargando" : x.estado === "cerrada" ? (m?.fuera ? "Medida · por revisar" : "Medida · en orden") : "Cancelada"}
+          {x.estado === "pedida" ? "Falta medir antes" : x.estado === "midio_antes" ? "Falta medir después" : x.estado === "cerrada" ? (m?.fuera ? "Medida · por revisar" : "Medida · en orden") : "Cancelada"}
         </span>
       </h3>
       <p className="chico">Pedida {fmtFechaHora(x.ts)} · cotizada en {fmtL(x.litrosCotizados)} · {fmtMXN(x.precioTotal)}</p>
 
       {x.estado === "pedida" && (
         <>
-          <Campo id={`t-${x.id}`} etiqueta="Testigo que mide (nombre o apodo)"><input id={`t-${x.id}`} value={testigo} maxLength={30} onChange={(v) => setTestigo(v.target.value)} /></Campo>
+          <Campo id={`t-${x.id}`} etiqueta="¿Quién mide? (nombre o apodo)"><input id={`t-${x.id}`} value={testigo} maxLength={30} onChange={(v) => setTestigo(v.target.value)} /></Campo>
           <div className="fila">
-            <Campo id={`a-${x.id}`} etiqueta="Nivel ANTES (cm)"><input id={`a-${x.id}`} inputMode="decimal" value={cmA} onChange={(v) => setCmA(v.target.value)} /></Campo>
+            <Campo id={`a-${x.id}`} etiqueta="Nivel ANTES de que descargue (cm)"><input id={`a-${x.id}`} inputMode="decimal" value={cmA} onChange={(v) => setCmA(v.target.value)} /></Campo>
             <Campo id={`c-${x.id}`} etiqueta="¿Cuándo?"><input id={`c-${x.id}`} type="datetime-local" value={cuando} onChange={(v) => setCuando(v.target.value)} /></Campo>
           </div>
           <Fallo texto={err} />
           <div className="acciones">
             <button className="btn" type="button" onClick={medirAntes}>Registrar nivel ANTES</button>
           </div>
+          <details>
+            <summary>¿Ya descargó y no alcancé a medir antes?</summary>
+            <p className="chico">Se puede anotar, pero <strong>no se podrá saber cuántos litros llegaron</strong>: sin el nivel de antes no hay con qué comparar. Mide antes la próxima vez.</p>
+            <Campo id={`s-${x.id}`} etiqueta="Nivel de ahora (cm)"><input id={`s-${x.id}`} inputMode="decimal" value={cmSolo} onChange={(v) => setCmSolo(v.target.value)} /></Campo>
+            <div className="acciones"><button className="btn sec chico" type="button" onClick={sinAntes}>Anotar sin comparar</button></div>
+          </details>
           {cancelar("La pipa no llegó")}
         </>
       )}
@@ -159,29 +188,37 @@ function TarjetaEntrega({ x, e, d }: { x: Entrega; e: Estado; d: Derivado }) {
         <>
           <p>Nivel antes: <strong className="num">{x.cmAntes} cm</strong> a las {x.tsAntes ? fmtFechaHora(x.tsAntes) : ""}, mide {x.testigo}.</p>
           <div className="fila">
-            <Campo id={`d-${x.id}`} etiqueta="Nivel DESPUÉS (cm)"><input id={`d-${x.id}`} inputMode="decimal" value={cmD} onChange={(v) => setCmD(v.target.value)} /></Campo>
+            <Campo id={`d-${x.id}`} etiqueta="Nivel DESPUÉS de que descargó (cm)"><input id={`d-${x.id}`} inputMode="decimal" value={cmD} onChange={(v) => setCmD(v.target.value)} /></Campo>
             <Campo id={`cd-${x.id}`} etiqueta="¿Cuándo?"><input id={`cd-${x.id}`} type="datetime-local" value={cuando} onChange={(v) => setCuando(v.target.value)} /></Campo>
           </div>
           <Fallo texto={err} />
           <div className="acciones">
-            <button className="btn" type="button" onClick={medirDespues}>Registrar nivel DESPUÉS y comparar</button>
+            <button className="btn" type="button" onClick={medirDespues}>Ver cuántos litros llegaron</button>
           </div>
           {cancelar("La pipa no descargó")}
         </>
       )}
 
+      {x.estado === "cerrada" && !m && (
+        <Aviso>Esta pipa se anotó <strong>sin medir antes</strong>, así que no se puede saber cuántos litros llegaron. Las cuotas sí se pueden llevar.</Aviso>
+      )}
       {m && (
         <>
+          <p style={{ fontSize: "1.08rem" }}>
+            <strong>Te cobraron {fmtL(x.litrosCotizados)} y llegaron cerca de {fmtL(m.entregadosEst)}.</strong>{" "}
+            {m.fuera ? (m.diferencia > 0 ? `Faltaron cerca de ${fmtL(m.diferencia)}.` : `Llegaron cerca de ${fmtL(-m.diferencia)} de más.`) : "La diferencia es normal para medir con regla."}
+          </p>
+          <p className="chico">Cómo se calculó: antes {x.cmAntes} cm, después {x.cmDespues} cm; {((x.cmDespues ?? 0) - (x.cmAntes ?? 0)).toLocaleString("es-MX", { maximumFractionDigits: 1 })} cm × {cal.litrosPorCm} L por cm = {fmtL(m.observados)}.</p>
           <div className="rejilla">
             <div className="dato"><div className="v">{fmtL(x.litrosCotizados)}</div><div className="e">Lo que te cobraron (cotizados)</div></div>
             <div className="dato"><div className="v">{fmtL(m.observados)}</div><div className="e">Lo que midió la regla (observados: después menos antes)</div></div>
             <div className="dato"><div className="v">{m.consumoEst == null ? "—" : `+${fmtL(m.consumoEst)}`}</div><div className="e">{m.consumoEst == null ? "Agua gastada durante la descarga (estimados): aún no se puede calcular" : `Agua gastada durante la descarga (estimados): ${m.minutos} min`}</div></div>
-            <div className={`dato ${m.fuera ? "fuera" : "bien"}`}><div className="v">{fmtL(m.diferencia)}</div><div className="e">Falta o sobra (error de medida que se acepta: ±{Math.round(m.margen).toLocaleString("es-MX")} L)</div></div>
+            <div className={`dato ${m.fuera ? "fuera" : "bien"}`}><div className="v">{fmtL(m.diferencia)}</div><div className="e">{m.diferencia > 0 ? "Faltaron" : m.diferencia < 0 ? "Sobraron" : "Diferencia"} (por medir con regla puede haber hasta {Math.round(m.margen).toLocaleString("es-MX")} L de error)</div></div>
           </div>
           {m.fuera ? (
             <Aviso tipo="alerta">
-              <strong>Te cobraron {fmtL(x.litrosCotizados)} y la regla marca cerca de {fmtL(m.entregadosEst)}.</strong> Faltan cerca de {fmtL(Math.abs(m.diferencia))}, más de lo que explica el error de medida (±{Math.round(m.margen).toLocaleString("es-MX")} L). Todavía no sabemos por qué: puede ser la medida de la cisterna, la regla o la entrega.
-              <br />Se abrió una <strong>revisión</strong> a cargo de {e.coordinador}: es una tarea para revisar con calma, no una acusación. Primero revisa las medidas en privado y luego, si sigue sin cuadrar, habla con el proveedor.
+              <strong>Es más de lo que explica el error de medida</strong> (hasta {Math.round(m.margen).toLocaleString("es-MX")} L). Todavía no sabemos por qué: puede ser la medida de la cisterna, la regla o la entrega.
+              <br />Se abrió una <strong>revisión</strong> a cargo de {e.coordinador}: te toca volver a medir con calma. No es una acusación a nadie. Si sigue sin cuadrar, habla con el proveedor.
             </Aviso>
           ) : (
             <Aviso tipo="agua">Todo en orden: la diferencia es menor que el error normal al medir con regla, así que no hay nada que revisar.</Aviso>
@@ -216,25 +253,25 @@ export default function Entregas({ e, d }: { e: Estado; d: Derivado }) {
   return (
     <div>
       <div className="tarjeta">
-        <h2>El mapa de una entrega</h2>
-        <p className="chico">Cada paso tiene un responsable con nombre, para que cuando algo falle se sepa a quién le toca.</p>
+        <h2>Cómo va una pipa</h2>
+        <p className="chico">Cada paso tiene un responsable, para que cuando algo falle se sepa a quién le toca.</p>
         <Mapa actual={pasoActual(enCurso)} />
       </div>
 
-      <div className="tarjeta">
-        <h2>Registrar una pipa pedida</h2>
+      <details className="tarjeta" open={lista.length === 0}>
+        <summary><strong>{lista.length === 0 ? "Registrar una pipa" : "Registrar otra pipa"}</strong></summary>
         {enCurso ? <Aviso>Ya hay una entrega en curso. Termina esa antes de registrar otra.</Aviso> : (
           <>
-            <Campo id="prov" etiqueta="Etiqueta de la pipa"><input id="prov" value={prov} maxLength={30} onChange={(v) => setProv(v.target.value)} placeholder="Pipa A" /></Campo>
+            <Campo id="prov" etiqueta="Nombre de la pipa (para distinguirla)"><input id="prov" value={prov} maxLength={30} onChange={(v) => setProv(v.target.value)} placeholder="Ej: Pipa de Don Beto" /></Campo>
             <div className="fila">
-              <Campo id="lit" etiqueta="Litros cotizados"><input id="lit" inputMode="numeric" value={lit} onChange={(v) => setLit(v.target.value)} placeholder="10000" /></Campo>
-              <Campo id="pre" etiqueta="Precio total ($)"><input id="pre" inputMode="decimal" value={precio} onChange={(v) => setPrecio(v.target.value)} placeholder="2200" /></Campo>
+              <Campo id="lit" etiqueta="Litros que te cobran"><input id="lit" inputMode="numeric" value={lit} onChange={(v) => setLit(v.target.value)} placeholder="Ej: 10000" /></Campo>
+              <Campo id="pre" etiqueta="Precio total ($)"><input id="pre" inputMode="decimal" value={precio} onChange={(v) => setPrecio(v.target.value)} placeholder="Ej: 2300" /></Campo>
             </div>
             <Fallo texto={err} />
             <div className="acciones"><button className="btn" type="button" onClick={pedir}>Registrar pedido</button></div>
           </>
         )}
-      </div>
+      </details>
 
       {lista.length === 0 ? <p>No hay entregas todavía.</p> : lista.map((x) => <TarjetaEntrega key={x.id} x={x} e={e} d={d} />)}
     </div>

@@ -293,16 +293,16 @@ export function nombreHogar(e: Estado, id: string) {
 export function textoResumen(e: Estado, o: OpcionesResumen, hoy: string, base: number | null): string {
   const l: string[] = [];
   l.push(`Resumen de la cisterna · ${hoy}${e.simulado ? " · DATOS SIMULADOS" : ""}`);
-  l.push(`Lo aprobó: ${e.coordinador || "(sin coordinador)"} (el texto lo revisa antes de enviarlo)`);
+  l.push(`Mensaje de ${e.coordinador || "(sin coordinador)"}`);
   const n = nivelActual(e);
-  if (o.nivel && n) l.push(`Nivel: ${n.pct}% (~${Math.round(n.litros).toLocaleString("es-MX")} L, estimado con la calibración)`);
+  if (o.nivel && n) l.push(`Nivel de la cisterna: ${n.pct}% (cerca de ${Math.round(n.litros).toLocaleString("es-MX")} de ${(e.cal ? capacidadL(e.cal) : 0).toLocaleString("es-MX")} litros)`);
   const cerradas = e.entregas.filter((x) => x.estado === "cerrada" && e.cal).sort((a, b) => b.ts - a.ts);
   if (o.ultimaEntrega && cerradas[0] && e.cal) {
     const m = medirEntrega(cerradas[0], e.cal, base);
     if (m)
       l.push(
         `Última pipa: cobraron ${cerradas[0].litrosCotizados.toLocaleString("es-MX")} L y la regla marcó cerca de ${Math.round(m.entregadosEst).toLocaleString("es-MX")} L. ${
-          m.fuera ? `Hay una diferencia de cerca de ${Math.abs(Math.round(m.diferencia)).toLocaleString("es-MX")} L que se está revisando en privado (puede ser error de medida).` : "Está dentro del error normal de medida."
+          m.fuera ? `La diferencia es de cerca de ${Math.abs(Math.round(m.diferencia)).toLocaleString("es-MX")} L, más de lo que explica el error normal de medida. Se está revisando en privado; todavía no sabemos la causa.` : "Está dentro del error normal de medida."
         }`,
       );
   }

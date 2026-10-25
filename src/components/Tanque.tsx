@@ -83,6 +83,10 @@ export default function Tanque({ e, cambiarCal }: { e: Estado; cambiarCal: () =>
       <div className="tarjeta">
         <h2>Anotar el nivel {e.simulado && <Simulado />}</h2>
         <p className="chico">Tú mides con la regla o el flotador y aquí apuntas el número. Cada lectura se queda guardada en este teléfono.</p>
+        <details>
+          <summary>¿Cómo mido?</summary>
+          <p className="chico">Con una regla, una cinta o un palo largo: mételo hasta el fondo, sácalo, y mide cuántos centímetros se mojó. Si tu cisterna tiene una varilla o un flotador, también sirve. Mide siempre en el mismo punto.</p>
+        </details>
         <div className="fila">
           <Campo id="cm" etiqueta="Nivel del agua (cm)"><input id="cm" inputMode="decimal" value={cm} onChange={(x) => setCm(x.target.value)} placeholder={`0 a ${cal.alturaMaxCm}`} /></Campo>
           <Campo id="cuando" etiqueta="¿Cuándo?"><input id="cuando" type="datetime-local" value={cuando} onChange={(x) => setCuando(x.target.value)} /></Campo>

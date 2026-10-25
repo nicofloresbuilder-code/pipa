@@ -98,6 +98,7 @@ function Tarjeta({ x, e, d, ahora }: { x: Excepcion; e: Estado; d: Derivado; aho
           <div className="acciones">
             <button className="btn" type="button" onClick={() => cerrar("resuelta")}>Ya lo revisé: resuelta</button>
           </div>
+          <p className="chico">Cierra la revisión y deja tu nota guardada.</p>
           <details>
             <summary>Más opciones</summary>
             <div className="acciones">
@@ -160,8 +161,8 @@ export default function Excepciones({ e, d, ahora }: { e: Estado; d: Derivado; a
 
       {lista.length === 0 ? <p>No hay revisiones pendientes. Si una entrega no cuadra, aparece aquí.</p> : lista.map((x) => <Tarjeta key={x.id} x={x} e={e} d={d} ahora={ahora} />)}
 
-      <div className="tarjeta">
-        <h2>Abrir una revisión a mano</h2>
+      <details className="tarjeta">
+        <summary><strong>Abrir una revisión por otro motivo</strong></summary>
         <label htmlFor="tipo-exc">Tipo</label>
         <select id="tipo-exc" value={tipo} onChange={(v) => setTipo(v.target.value as TipoExcepcion)}>
           {Object.entries(TIPOS).filter(([k]) => k !== "litros").map(([k, v]) => <option key={k} value={k}>{v.t}</option>)}
@@ -170,7 +171,7 @@ export default function Excepciones({ e, d, ahora }: { e: Estado; d: Derivado; a
         <Fallo texto={err} />
         <Aviso>Las revisiones por litros se abren solas al comparar una entrega.</Aviso>
         <div className="acciones"><button className="btn" type="button" onClick={abrir}>Abrir revisión</button></div>
-      </div>
+      </details>
     </div>
   );
 }

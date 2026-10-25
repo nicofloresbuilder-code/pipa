@@ -67,8 +67,8 @@ export default function Pipa() {
 
       <footer className="pie">
         <p>
-          PIPA es un prototipo de clase (Business Bending, semana 11). Registra litros y cuotas; no garantiza que una entrega sea correcta ni acusa a nadie. Todo se guarda solo en este teléfono.{" "}
-          <Link href="/condiciones">Cómo cumple las condiciones del Blueprint</Link>
+          PIPA es un prototipo (proyecto de clase). Registra litros y cuotas; no garantiza que una entrega sea correcta ni acusa a nadie. Todo se guarda solo en este teléfono.{" "}
+          <Link href="/condiciones">Cómo cuida PIPA a tus vecinos y tus datos</Link>
         </p>
         {!seguro ? (
           <button className="btn sec chico" type="button" onClick={() => setSeguro(true)}>Borrar todos mis datos de este teléfono</button>

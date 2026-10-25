@@ -16,14 +16,21 @@ export default function Hoy({ e, d, ahora, ir }: { e: Estado; d: Derivado; ahora
 
   return (
     <div>
+      {!enCurso && (
+        <div className="tarjeta ambar">
+          <h2>¿Llegó o va a llegar una pipa?</h2>
+          <p>Para saber cuánta agua dejó, hay que <strong>medir el nivel antes</strong> de que descargue y otra vez <strong>después</strong>. Anótala aquí y te guío paso a paso.</p>
+          <div className="acciones"><button className="btn" type="button" onClick={() => ir("entregas")}>Anotar una pipa</button></div>
+        </div>
+      )}
       <div className="tarjeta agua">
         <h2>
-          Nivel del tanque {e.simulado && <Simulado />}
+          Nivel de la cisterna {e.simulado && <Simulado />}
         </h2>
         {n ? (
           <>
             <div className="rejilla">
-              <div className="dato"><div className="v">{n.pct}%</div><div className="e">de la capacidad ({fmtL(d.capacidad)})</div></div>
+              <div className="dato"><div className="v">{n.pct}%</div><div className="e">de lo que cabe ({fmtL(d.capacidad)})</div></div>
               <div className="dato"><div className="v">{fmtL(n.litros)}</div><div className="e">estimado con la calibración (±{e.cal.incertidumbrePct}%)</div></div>
               <div className="dato"><div className="v">{n.cm} cm</div><div className="e">última lectura, {hace(n.ts, ahora)}</div></div>
             </div>

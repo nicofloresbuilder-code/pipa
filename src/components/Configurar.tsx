@@ -63,7 +63,7 @@ export default function Configurar({ alTerminar }: { alTerminar?: () => void }) 
       <div className="tarjeta agua">
         <h2>Primero: ¿quién lleva las cuentas de la cisterna?</h2>
         <p>
-          Una <strong>persona con nombre</strong>, la que ya lleva las cuentas y avisa en el grupo (le decimos coordinador). Esa persona anota los niveles y las cuotas, y es quien revisa cuando algo no cuadra. Sin ese nombre, PIPA no abre ninguna revisión.
+          Una <strong>persona con nombre</strong>, la que ya lleva las cuentas y avisa en el grupo (le decimos coordinador). Esa persona anota los niveles y las cuotas, y es quien revisa cuando algo no cuadra. Una &quot;revisión&quot; es cuando algo no cuadra, por ejemplo si la pipa dejó menos agua de la cobrada. Sin tu nombre, la app no sabe a quién le toca.
         </p>
         <details>
           <summary>¿Todavía no tienes coordinador? Toca aquí: te damos una frase para pedírselo a un vecino</summary>
@@ -76,7 +76,7 @@ export default function Configurar({ alTerminar }: { alTerminar?: () => void }) 
 
       <div className="tarjeta">
         <h2>{e.cal ? "Medidas de la cisterna y hogares" : "Armar la cisterna"}</h2>
-        <Aviso>Esta app guarda todo en tu teléfono. No pidas ni escribas datos reales de personas: usa apodos.</Aviso>
+        <Aviso>Todo se queda en tu teléfono; no cuesta ni pide tu número. Para los hogares usa apodos (por ejemplo, &quot;Casa 1&quot;): no hace falta escribir nombres ni teléfonos reales.</Aviso>
         <Campo id="coord" etiqueta="Tu nombre (o apodo)" ayuda="Es el nombre que aparecerá como responsable de las revisiones.">
           <input id="coord" value={coord} maxLength={40} onChange={(x) => setCoord(x.target.value)} autoComplete="off" />
         </Campo>

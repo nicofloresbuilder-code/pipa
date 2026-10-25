@@ -55,26 +55,24 @@ export default function Dinero({ e }: { e: Estado }) {
               {cs.length === 0 ? (
                 x.precioTotal > 0 && e.hogares.length > 0 ? <div className="acciones"><button className="btn sec chico" type="button" onClick={() => generar(x.id, x.precioTotal)}>Calcular cuotas</button></div> : <p className="chico">Sin precio o sin hogares.</p>
               ) : (
-                <div className="tabla-scroll">
-                  <table>
-                    <thead><tr><th>Hogar</th><th className="num">Cuota</th><th>Cómo</th><th>Estado</th></tr></thead>
-                    <tbody>
-                      {cs.map((c) => (
-                        <tr key={c.id}>
-                          <td>{nombreHogar(e, c.hogarId)}</td>
-                          <td className="num">{fmtMXN(c.monto)}</td>
-                          <td>
-                            <select aria-label={`Método de ${nombreHogar(e, c.hogarId)}`} value={c.metodo} onChange={(v) => metodo(c, v.target.value as Cuota["metodo"])} style={{ minHeight: 36, padding: "4px 6px", minWidth: 130 }}>
-                              <option value="efectivo">Efectivo</option>
-                              <option value="transferencia">Transferencia</option>
-                              <option value="otro">Otro</option>
-                            </select>
-                          </td>
-                          <td><button className="btn sec chico" type="button" aria-pressed={c.confirmada} onClick={() => confirmar(c)}>{c.confirmada ? "Confirmada" : "Por confirmar"}</button></td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                <div>
+                  <p className="chico">{fmtMXN(x.precioTotal)} entre {cs.length} casas, según lo que cobró el proveedor.{e.excepciones.some((q) => q.entregaId === x.id && (q.estado === "abierta" || q.estado === "en_revision")) ? " Esta pipa tiene una revisión abierta: si se ajusta el cobro, se corrige aquí." : ""}</p>
+                  {cs.map((c) => (
+                    <div key={c.id} className="paso" style={{ gridTemplateColumns: "1fr" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+                        <strong>{nombreHogar(e, c.hogarId)}</strong>
+                        <span className="num">{fmtMXN(c.monto)}</span>
+                      </div>
+                      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                        <select aria-label={`Cómo paga ${nombreHogar(e, c.hogarId)}`} value={c.metodo} onChange={(v) => metodo(c, v.target.value as Cuota["metodo"])} style={{ minHeight: 40, padding: "4px 6px", width: "auto", flex: "1 1 130px" }}>
+                          <option value="efectivo">Efectivo</option>
+                          <option value="transferencia">Transferencia</option>
+                          <option value="otro">Otro</option>
+                        </select>
+                        <button className="btn sec chico" type="button" aria-pressed={c.confirmada} onClick={() => confirmar(c)} style={{ flex: "1 1 130px" }}>{c.confirmada ? "Ya dio su cuota" : "Por confirmar"}</button>
+                      </div>
+                    </div>
+                  ))}
                   <p className="chico">Suma de cuotas: {fmtMXN(Math.round(suma * 100) / 100)} de {fmtMXN(x.precioTotal)}.</p>
                 </div>
               )}
@@ -84,7 +82,7 @@ export default function Dinero({ e }: { e: Estado }) {
       </div>
 
       <div className="tarjeta">
-        <h2>Hogares</h2>
+        <h2>Hogares y cuánto paga cada uno</h2>
         <p className="chico">&quot;Cuánto paga&quot;: 1 es una parte normal, 2 es el doble. Solo cambia las <em>próximas</em> entregas. Marca &quot;solo efectivo&quot; para quien no usa celular ni transferencia.</p>
         <div className="tabla-scroll">
           <table>
