@@ -7,7 +7,7 @@ import type { EstadoExcepcion, Estado, Excepcion, TipoExcepcion } from "@/lib/ti
 import { Aviso, Campo, Fallo, Simulado, fmtFechaHora, fmtL, hace } from "./ui";
 
 export const TIPOS: Record<TipoExcepcion, { t: string; primer: string; plazo: string }> = {
-  litros: { t: "Diferencia de litros", primer: "Revisar mediciones y calibración en privado con el testigo; si hace falta, corregir y volver a comparar.", plazo: "48 h" },
+  litros: { t: "Diferencia de litros", primer: "Revisar las medidas en privado con quien midió; si hace falta, corregirlas y volver a comparar.", plazo: "48 h" },
   no_llego: { t: "La pipa no llegó", primer: "Hablar con el proveedor y avisar al grupo si hay que pedir otra.", plazo: "24 h" },
   acceso: { t: "No se pudo descargar (acceso)", primer: "Resolver el acceso con quien tenga la llave o la conexión.", plazo: "24 h" },
   cobro: { t: "Cobro distinto al acordado", primer: "Pedir el desglose por escrito antes de pagar la diferencia.", plazo: "72 h" },
@@ -96,9 +96,9 @@ function Tarjeta({ x, e, d, ahora }: { x: Excepcion; e: Estado; d: Derivado; aho
           </Campo>
           <Fallo texto={err} />
           <div className="acciones">
-            <button className="btn" type="button" onClick={() => cerrar("resuelta")}>Ya lo revisé: resuelta</button>
+            <button className="btn" type="button" onClick={() => cerrar("resuelta")}>Ya lo revisé: cerrar</button>
           </div>
-          <p className="chico">Cierra la revisión y deja tu nota guardada.</p>
+          <p className="chico">Esto cierra la revisión. Tu nota queda guardada y puedes reabrirla si hace falta.</p>
           <details>
             <summary>Más opciones</summary>
             <div className="acciones">
@@ -148,7 +148,7 @@ export default function Excepciones({ e, d, ahora }: { e: Estado; d: Derivado; a
     <div>
       <div className="tarjeta ambar">
         <h2>Revisiones: cuando algo no cuadra</h2>
-        <p>Cada revisión (en el sistema, una &quot;excepción&quot;) tiene <strong>una persona con nombre</strong> ({e.coordinador || "el coordinador"}), un primer paso y un plazo. Se atienden en privado primero. PIPA nunca acusa a nadie.</p>
+        <p>Cada revisión tiene <strong>una persona con nombre</strong>: {e.coordinador || "el coordinador"}. Además lleva un primer paso y un plazo. Se atienden en privado primero. PIPA nunca acusa a nadie.</p>
         <details><summary>Ver tipos, primer paso y plazos</summary>
         <div className="tabla-scroll">
           <table>

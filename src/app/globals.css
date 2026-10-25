@@ -111,5 +111,9 @@ td.num, th.num { text-align: right; font-family: var(--mono); }
 .pie { margin-top: 40px; padding-top: 14px; border-top: 2px solid var(--tinta); font-size: .85rem; color: var(--tinta-2); }
 details > summary { cursor: pointer; font-weight: 600; min-height: 36px; display: flex; align-items: center; }
 .grafica { width: 100%; height: auto; background: #fff; border: 2px solid var(--tinta); border-radius: 4px; }
-@media (max-width: 520px) { h1 { font-size: 1.55rem; } .marca { font-size: 1.7rem; } .tarjeta { padding: 12px; } }
+@media (max-width: 520px) {
+  .nav { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding: 8px 0; overflow: visible; position: static; }
+  .nav button { border: 2px solid var(--tinta); border-radius: 4px; margin: 0 !important; padding: 8px 4px !important; text-align: center; background: var(--papel-2); }
+  .nav button[aria-current="page"] { background: var(--tinta); color: #fff; }
+  h1 { font-size: 1.55rem; } .marca { font-size: 1.7rem; } .tarjeta { padding: 12px; } }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }

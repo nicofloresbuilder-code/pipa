@@ -44,7 +44,7 @@ export default function Hoy({ e, d, ahora, ir }: { e: Estado; d: Derivado; ahora
           <p>Todavía no hay lecturas. Anota el nivel del tanque para empezar.</p>
         )}
         <div className="acciones">
-          <button className="btn" type="button" onClick={() => ir("tanque")}>Anotar nivel</button>
+          <button className="btn" type="button" onClick={() => ir("tanque")}>Medir el agua del tanque</button>
         </div>
       </div>
 

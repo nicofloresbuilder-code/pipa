@@ -67,7 +67,7 @@ export default function Pipa() {
 
       <footer className="pie">
         <p>
-          PIPA es un prototipo (proyecto de clase). Registra litros y cuotas; no garantiza que una entrega sea correcta ni acusa a nadie. Todo se guarda solo en este teléfono.{" "}
+          PIPA te ayuda a anotar y comparar; las decisiones son tuyas y no acusa a nadie. Es un prototipo (proyecto de clase). Todo se guarda solo en este teléfono.{" "}
           <Link href="/condiciones">Cómo cuida PIPA a tus vecinos y tus datos</Link>
         </p>
         {!seguro ? (

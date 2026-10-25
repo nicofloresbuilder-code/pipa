@@ -87,10 +87,8 @@ export default function Tanque({ e, cambiarCal }: { e: Estado; cambiarCal: () =>
           <summary>¿Cómo mido?</summary>
           <p className="chico">Con una regla, una cinta o un palo largo: mételo hasta el fondo, sácalo, y mide cuántos centímetros se mojó. Si tu cisterna tiene una varilla o un flotador, también sirve. Mide siempre en el mismo punto.</p>
         </details>
-        <div className="fila">
-          <Campo id="cm" etiqueta="Nivel del agua (cm)"><input id="cm" inputMode="decimal" value={cm} onChange={(x) => setCm(x.target.value)} placeholder={`0 a ${cal.alturaMaxCm}`} /></Campo>
-          <Campo id="cuando" etiqueta="¿Cuándo?"><input id="cuando" type="datetime-local" value={cuando} onChange={(x) => setCuando(x.target.value)} /></Campo>
-        </div>
+        <Campo id="cm" etiqueta="Nivel del agua (cm)"><input id="cm" inputMode="decimal" value={cm} onChange={(x) => setCm(x.target.value)} placeholder={`Ej: 0 a ${cal.alturaMaxCm}`} /></Campo>
+        <Campo id="cuando" etiqueta="¿A qué hora lo mediste?"><input id="cuando" type="datetime-local" value={cuando} onChange={(x) => setCuando(x.target.value)} /></Campo>
         <Campo id="nota-l" etiqueta="Nota (opcional)"><input id="nota-l" value={nota} maxLength={100} onChange={(x) => setNota(x.target.value)} /></Campo>
         <Fallo texto={err} />
         <div className="acciones"><button className="btn" type="button" onClick={agregar}>Guardar lectura</button></div>
@@ -108,7 +106,7 @@ export default function Tanque({ e, cambiarCal }: { e: Estado; cambiarCal: () =>
           {cal.nota ? ` ${cal.nota}` : ""}
         </p>
         <Aviso tipo="agua">Los litros se calculan con las medidas de tu cisterna, por eso son aproximados. Si puedes, comprueba una vez cuánta agua entra con una cubeta o un medidor.</Aviso>
-        <div className="acciones"><button className="btn sec" type="button" onClick={cambiarCal}>Cambiar calibración u hogares</button></div>
+        <div className="acciones"><button className="btn sec" type="button" onClick={cambiarCal}>Cambiar las medidas de la cisterna u hogares</button></div>
       </div>
 
       <div className="tarjeta">

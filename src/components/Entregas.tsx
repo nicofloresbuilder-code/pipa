@@ -11,7 +11,7 @@ const PASOS = [
   { n: 2, t: "Mides el nivel ANTES de que descargue", q: "Testigo (un vecino)" },
   { n: 3, t: "La pipa descarga", q: "Chofer (no usa la app)" },
   { n: 4, t: "Mides el nivel DESPUÉS", q: "Testigo (un vecino)" },
-  { n: 5, t: "PIPA compara lo que te cobraron con lo que midió la regla", q: "PIPA calcula; tú decides" },
+  { n: 5, t: "PIPA compara lo que te cobraron con lo que midió la regla", q: "PIPA calcula; tú decides si hablas con el proveedor" },
   { n: 6, t: "Anotas quién ya dio su cuota (PIPA solo anota; no cobra ni guarda dinero)", q: "Coordinador" },
   { n: 7, t: "Si algo no cuadra, alguien con nombre lo revisa", q: "Coordinador" },
 ];
@@ -161,15 +161,13 @@ function TarjetaEntrega({ x, e, d }: { x: Entrega; e: Estado; d: Derivado }) {
           {x.estado === "pedida" ? "Falta medir antes" : x.estado === "midio_antes" ? "Falta medir después" : x.estado === "cerrada" ? (m?.fuera ? "Medida · por revisar" : "Medida · en orden") : "Cancelada"}
         </span>
       </h3>
-      <p className="chico">Pedida {fmtFechaHora(x.ts)} · cotizada en {fmtL(x.litrosCotizados)} · {fmtMXN(x.precioTotal)}</p>
+      <p className="chico">Pedida {fmtFechaHora(x.ts)} · te cobran {fmtL(x.litrosCotizados)} por {fmtMXN(x.precioTotal)}</p>
 
       {x.estado === "pedida" && (
         <>
           <Campo id={`t-${x.id}`} etiqueta="¿Quién mide? (nombre o apodo)"><input id={`t-${x.id}`} value={testigo} maxLength={30} onChange={(v) => setTestigo(v.target.value)} /></Campo>
-          <div className="fila">
-            <Campo id={`a-${x.id}`} etiqueta="Nivel ANTES de que descargue (cm)"><input id={`a-${x.id}`} inputMode="decimal" value={cmA} onChange={(v) => setCmA(v.target.value)} /></Campo>
-            <Campo id={`c-${x.id}`} etiqueta="¿Cuándo?"><input id={`c-${x.id}`} type="datetime-local" value={cuando} onChange={(v) => setCuando(v.target.value)} /></Campo>
-          </div>
+          <Campo id={`a-${x.id}`} etiqueta="Nivel ANTES de que descargue (cm)"><input id={`a-${x.id}`} inputMode="decimal" value={cmA} onChange={(v) => setCmA(v.target.value)} /></Campo>
+          <Campo id={`c-${x.id}`} etiqueta="¿A qué hora lo mediste?" ayuda="Si fue hace un rato, cámbiala."><input id={`c-${x.id}`} type="datetime-local" value={cuando} onChange={(v) => setCuando(v.target.value)} /></Campo>
           <Fallo texto={err} />
           <div className="acciones">
             <button className="btn" type="button" onClick={medirAntes}>Registrar nivel ANTES</button>
@@ -187,10 +185,8 @@ function TarjetaEntrega({ x, e, d }: { x: Entrega; e: Estado; d: Derivado }) {
       {x.estado === "midio_antes" && (
         <>
           <p>Nivel antes: <strong className="num">{x.cmAntes} cm</strong> a las {x.tsAntes ? fmtFechaHora(x.tsAntes) : ""}, mide {x.testigo}.</p>
-          <div className="fila">
-            <Campo id={`d-${x.id}`} etiqueta="Nivel DESPUÉS de que descargó (cm)"><input id={`d-${x.id}`} inputMode="decimal" value={cmD} onChange={(v) => setCmD(v.target.value)} /></Campo>
-            <Campo id={`cd-${x.id}`} etiqueta="¿Cuándo?"><input id={`cd-${x.id}`} type="datetime-local" value={cuando} onChange={(v) => setCuando(v.target.value)} /></Campo>
-          </div>
+          <Campo id={`d-${x.id}`} etiqueta="Nivel DESPUÉS de que descargó (cm)"><input id={`d-${x.id}`} inputMode="decimal" value={cmD} onChange={(v) => setCmD(v.target.value)} /></Campo>
+          <Campo id={`cd-${x.id}`} etiqueta="¿A qué hora lo mediste?"><input id={`cd-${x.id}`} type="datetime-local" value={cuando} onChange={(v) => setCuando(v.target.value)} /></Campo>
           <Fallo texto={err} />
           <div className="acciones">
             <button className="btn" type="button" onClick={medirDespues}>Ver cuántos litros llegaron</button>
@@ -217,8 +213,11 @@ function TarjetaEntrega({ x, e, d }: { x: Entrega; e: Estado; d: Derivado }) {
           </div>
           {m.fuera ? (
             <Aviso tipo="alerta">
-              <strong>Es más de lo que explica el error de medida</strong> (hasta {Math.round(m.margen).toLocaleString("es-MX")} L). Todavía no sabemos por qué: puede ser la medida de la cisterna, la regla o la entrega.
-              <br />Se abrió una <strong>revisión</strong> a cargo de {e.coordinador}: te toca volver a medir con calma. No es una acusación a nadie. Si sigue sin cuadrar, habla con el proveedor.
+              <strong>Lo más probable es que haya llegado menos de lo cobrado</strong>, porque la diferencia es mayor que el error normal de medir con regla (hasta {Math.round(m.margen).toLocaleString("es-MX")} L).
+              <br />Se abrió una <strong>revisión</strong> a cargo de {e.coordinador}: vuelve a medir con calma. Si sigue igual, habla con el proveedor. No es una acusación a nadie.
+              <details><summary>¿De dónde sale ese margen de error?</summary>
+                <p className="chico">Suma de tres cosas: {fmtL(m.desglose.calibracion)} por el margen de tu cisterna ({cal.incertidumbrePct}% de lo medido), {fmtL(m.desglose.lectura)} por leer la regla (medio centímetro de error en cada lectura) y {fmtL(m.desglose.consumo)} por no saber exactamente cuánta agua se gastó mientras descargaba.</p>
+              </details>
             </Aviso>
           ) : (
             <Aviso tipo="agua">Todo en orden: la diferencia es menor que el error normal al medir con regla, así que no hay nada que revisar.</Aviso>

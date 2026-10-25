@@ -132,7 +132,7 @@ export function medirEntrega(e: Entrega, cal: Calibracion, litrosPorDiaBase: num
   const errLectura = 2 * 0.5 * cal.litrosPorCm;
   const errConsumo = consumoEst != null ? 0.5 * consumoEst : 0.05 * Math.max(observados, 0);
   const margen = redondea(errCal + errLectura + errConsumo, 1);
-  return { observados, consumoEst, entregadosEst, diferencia, margen, fuera: Math.abs(diferencia) > margen, minutos };
+  return { observados, consumoEst, entregadosEst, diferencia, margen, desglose: { calibracion: redondea(errCal, 0), lectura: redondea(errLectura, 0), consumo: redondea(errConsumo, 0) }, fuera: Math.abs(diferencia) > margen, minutos };
 }
 
 export function validarMediciones(e: Entrega, cmDespues: number, tsDespues: number): string | null {

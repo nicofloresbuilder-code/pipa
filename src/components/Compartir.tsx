@@ -8,12 +8,12 @@ import type { Estado } from "@/lib/tipos";
 import { Aviso } from "./ui";
 
 const ETQ: Record<keyof OpcionesResumen, string> = {
-  nivel: "Nivel actual del tanque",
-  ultimaEntrega: "Última entrega (cotizados, observados, margen)",
-  pronostico: "Aviso de cuándo conviene pedir pipa",
-  gasto: "Gasto de la última entrega",
-  cuotas: "Cuántas cuotas van confirmadas (sin nombres)",
-  lecturasCrudas: "Las últimas 5 lecturas crudas",
+  nivel: "Cuánta agua hay ahora",
+  ultimaEntrega: "Última pipa: cuánto cobraron y cuánto llegó",
+  pronostico: "Aviso de cuándo conviene pedir otra pipa",
+  gasto: "Cuánto costó la última pipa",
+  cuotas: "Cuántas cuotas van (sin decir quién)",
+  lecturasCrudas: "Las últimas 5 medidas que anoté",
 };
 
 export default function Compartir({ e, d, ahora }: { e: Estado; d: Derivado; ahora: number }) {
@@ -39,7 +39,7 @@ export default function Compartir({ e, d, ahora }: { e: Estado; d: Derivado; aho
       <div className="tarjeta">
         <h2>Vista previa</h2>
         <label htmlFor="prev" className="oculto-lector">Texto del resumen</label>
-        <textarea id="prev" readOnly value={texto} style={{ minHeight: 220 }} />
+        <textarea id="prev" readOnly value={texto} rows={texto.split("\n").length + 6} style={{ minHeight: 220 }} />
         <div className="acciones">
           <button className="btn" type="button" onClick={async () => setCopiado(await copiar(texto))}>Copiar resumen</button>
         </div>

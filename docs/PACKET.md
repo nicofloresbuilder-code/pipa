@@ -32,9 +32,9 @@ Cómo se comprueba: el selftest del motor (cálculos), el pase mecánico (Playwr
 
 ## 4. Mockup
 
-![Mockup de PIPA](mockup.png)
+![Mockup de PIPA: Hoy, una entrega comparada y una revisión](mockup.png)
 
-*(Hecho con HTML a partir de mi diseño, sin IA de imágenes. Muestra la pantalla "Hoy": nivel del tanque, aviso de pronóstico y la excepción abierta.)*
+*Son capturas de la primera versión funcional (celular de 390 px, con el ejemplo simulado cargado): "Hoy" con la revisión pendiente, una entrega comparada y la pantalla de revisiones. Antes de escribir código describí las pantallas por texto en el chat de construcción; no usé IA de imágenes, así que esto es lo más cercano a un mockup que tengo. Las imágenes son del diseño tal como quedó después de la prueba con la persona sintética.*
 
 ## 5. El flujo (Mermaid)
 

@@ -56,7 +56,7 @@ export default function Dinero({ e }: { e: Estado }) {
                 x.precioTotal > 0 && e.hogares.length > 0 ? <div className="acciones"><button className="btn sec chico" type="button" onClick={() => generar(x.id, x.precioTotal)}>Calcular cuotas</button></div> : <p className="chico">Sin precio o sin hogares.</p>
               ) : (
                 <div>
-                  <p className="chico">{fmtMXN(x.precioTotal)} entre {cs.length} casas, según lo que cobró el proveedor.{e.excepciones.some((q) => q.entregaId === x.id && (q.estado === "abierta" || q.estado === "en_revision")) ? " Esta pipa tiene una revisión abierta: si se ajusta el cobro, se corrige aquí." : ""}</p>
+                  <p className="chico">Cuando un vecino te dé su cuota, toca &quot;Por confirmar&quot; para marcarla. {fmtMXN(x.precioTotal)} entre {cs.length} casas, según lo que cobró el proveedor.{e.excepciones.some((q) => q.entregaId === x.id && (q.estado === "abierta" || q.estado === "en_revision")) ? " Esta pipa tiene una revisión abierta: si se ajusta el cobro, se corrige aquí." : ""}</p>
                   {cs.map((c) => (
                     <div key={c.id} className="paso" style={{ gridTemplateColumns: "1fr" }}>
                       <div style={{ display: "flex", justifyContent: "space-between", gap: 8, flexWrap: "wrap", alignItems: "center" }}>

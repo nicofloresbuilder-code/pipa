@@ -95,11 +95,11 @@ export default function Configurar({ alTerminar }: { alTerminar?: () => void }) 
           <Campo id="lpc" etiqueta="Litros por cada cm de altura"><input id="lpc" inputMode="decimal" value={lpc} onChange={(x) => setLpc(x.target.value)} placeholder="Ej: 100" /></Campo>
         )}
         <div className="fila">
-          <Campo id="alto" etiqueta="Altura máxima del agua (cm)"><input id="alto" inputMode="decimal" value={alto} onChange={(x) => setAlto(x.target.value)} placeholder="Ej: 130" /></Campo>
+          <Campo id="alto" etiqueta="Altura máxima del agua (cm)" ayuda="Del fondo hasta donde llega el agua cuando está llena."><input id="alto" inputMode="decimal" value={alto} onChange={(x) => setAlto(x.target.value)} placeholder="Ej: 130" /></Campo>
           <Campo id="inc" etiqueta="Margen de error (%)" ayuda="Si no sabes, déjalo en 5."><input id="inc" inputMode="decimal" value={inc} onChange={(x) => setInc(x.target.value)} /></Campo>
           <Campo id="res" etiqueta="Avisar cuando quede (%)" ayuda="Si no sabes, déjalo en 15."><input id="res" inputMode="decimal" value={reserva} onChange={(x) => setReserva(x.target.value)} /></Campo>
         </div>
-        <Campo id="nota" etiqueta="Nota de calibración (opcional)"><input id="nota" value={nota} maxLength={120} onChange={(x) => setNota(x.target.value)} placeholder="Ej: medí con cinta el 20 de octubre" /></Campo>
+        <Campo id="nota" etiqueta="Nota sobre las medidas (opcional)"><input id="nota" value={nota} maxLength={120} onChange={(x) => setNota(x.target.value)} placeholder="Ej: medí con cinta el 20 de octubre" /></Campo>
 
         <Campo id="hog" etiqueta="Hogares (uno por línea)">
           <textarea id="hog" value={hogares} onChange={(x) => setHogares(x.target.value)} placeholder={"Casa 1\nCasa 2\nCasa 3"} />
@@ -120,7 +120,7 @@ export default function Configurar({ alTerminar }: { alTerminar?: () => void }) 
             </button>
           )}
         </div>
-        {!e.cal && <p className="chico">El ejemplo simulado llena todo con datos inventados y los marca como simulados; sirve para probar sin esperar tres semanas.</p>}
+        {!e.cal && <p className="chico">&quot;Ejemplo simulado&quot; es solo para probar la app con datos inventados (queda marcado como simulado). Puedes borrarlo al terminar.</p>}
       </div>
     </div>
   );

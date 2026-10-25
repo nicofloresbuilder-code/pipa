@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 export const fmtL = (n: number) => `${Math.round(n).toLocaleString("es-MX")} L`;
-export const fmtMXN = (n: number) => `$${n.toLocaleString("es-MX", { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
+export const fmtMXN = (n: number) => `$${n.toLocaleString("es-MX", { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 })}`;
 export const fmtFechaHora = (ts: number) =>
   new Date(ts).toLocaleString("es-MX", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 

@@ -109,6 +109,7 @@ export type Medicion = {
   entregadosEst: number;
   diferencia: number; // cotizados - entregados estimados (positivo = entró menos)
   margen: number;
+  desglose: { calibracion: number; lectura: number; consumo: number };
   fuera: boolean;
   minutos: number;
 };
